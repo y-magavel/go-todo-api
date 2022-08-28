@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/y-magavel/go-todo-api/config"
 	"log"
 	"net"
 	"os"
+
+	"github.com/y-magavel/go-todo-api/config"
 )
 
 func main() {
