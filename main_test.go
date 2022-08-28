@@ -28,7 +28,7 @@ func TestRun(t *testing.T) {
 	// どんなポート番号でリッスンしているのか確認
 	t.Logf("try request to %q", url)
 
-	rsp, err := http.Get("http://localhost:18080/" + in)
+	rsp, err := http.Get(url)
 	if err != nil {
 		t.Errorf("faild to get: %+v", err)
 	}
