@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -32,6 +33,17 @@ type Queryer interface {
 	GetContext(ctx context.Context, dest interface{}, query string, args ...any) error
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...any) error
 }
+
+const (
+	// ErrCodeMySQLDuplicateEntry はMySQL系のDUPLICATEエラーコード
+	// https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+	// Error Code: 1062; Symbol: ER_DUP_ENTRY; SQLSTATE: 23000
+	ErrCodeMySQLDuplicateEntry = 1062
+)
+
+var (
+	ErrAlreadyEntry = errors.New("duplicate entry")
+)
 
 var (
 	_ Beginner = (*sqlx.DB)(nil)
