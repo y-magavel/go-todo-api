@@ -3,9 +3,12 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/y-magavel/go-todo-api/clock"
 	"github.com/y-magavel/go-todo-api/config"
@@ -31,6 +34,17 @@ type Queryer interface {
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...any) error
 }
 
+const (
+	// ErrCodeMySQLDuplicateEntry はMySQL系のDUPLICATEエラーコード
+	// https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+	// Error Code: 1062; Symbol: ER_DUP_ENTRY; SQLSTATE: 23000
+	ErrCodeMySQLDuplicateEntry = 1062
+)
+
+var (
+	ErrAlreadyEntry = errors.New("duplicate entry")
+)
+
 var (
 	_ Beginner = (*sqlx.DB)(nil)
 	_ Preparer = (*sqlx.DB)(nil)
@@ -47,6 +61,7 @@ func New(ctx context.Context, cfg *config.Config) (*sqlx.DB, func(), error) {
 	// sqlx.Connectを使うと内部でpingする。
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName))
 	if err != nil {
+		log.Printf("failed to open database: %v", err)
 		return nil, nil, err
 	}
 
