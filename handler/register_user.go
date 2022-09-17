@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/go-playground/validator"
 	"github.com/y-magavel/go-todo-api/entity"
-	"net/http"
 )
 
 type RegisterUser struct {
